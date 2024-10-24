@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Better PWAs",
+  "version": "0.0.1",
+  "description": "Improved PWAs for selected sites",
+  "icons": {
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.smh.com.au/*"],
+      "js": ["content-script.js"]
+    }
+  ]
+}
