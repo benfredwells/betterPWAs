@@ -4,8 +4,7 @@
   "version": "0.0.3",
   "description": "Improved PWAs for selected sites",
   "icons": {
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
+    "512": "images/icon512.png"
   },
   "permissions": ["declarativeNetRequest"],
   "host_permissions": ["https://github.com/*"],
