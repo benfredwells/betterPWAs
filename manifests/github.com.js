@@ -4,7 +4,7 @@ const manifest = {
   start_url: "https://github.com",
   display: "minimal-ui",
   display_override: ["tabbed"],
-  tabstrip: {
+  tab_strip: {
     home_tab: {
       scope_patterns:
         // This should be configurable
