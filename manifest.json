@@ -4,9 +4,20 @@
   "version": "0.0.3",
   "description": "Improved PWAs for selected sites",
   "icons": {
+    "48": "images/icon48.png",
     "512": "images/icon512.png"
   },
-  "permissions": ["declarativeNetRequest"],
+  "action": {
+    "default_icon": {
+      "48": "images/iconDisabled48.png"
+    },
+    "default_title": "Better PWA: No betterment available"
+  },
+  "permissions": ["declarativeNetRequest", "tabs"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "host_permissions": ["https://github.com/*"],
   "content_scripts": [
     {
