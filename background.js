@@ -1,11 +1,9 @@
 const handledSites = [
   {
     url: "https://www.smh.com.au",
-    title: "Better PWA: Manifest injected",
   },
   {
     url: "https://github.com",
-    title: "Better PWA: Click to disable CSP",
     needsCSPDisabled: true,
   },
 ];
@@ -13,7 +11,13 @@ const handledSites = [
 const ENABLED_ICON = "./images/icon48.png";
 const NEEDS_CSP_DISABLED_ICON = "./images/iconBlue48.png";
 const CSP_DISABLED_ICON = "./images/iconRed48.png";
-const DIABLED_ICON = "./images/iconDisabled48.png";
+const DISABLED_ICON = "./images/iconDisabled48.png";
+
+const ENABLED_TEXT = "Better PWA: Manifest updated";
+const NEEDS_CSP_DIABLED_TEXT = "Better PWA: Click to disable CSP";
+const CSP_DIABLED_TEXT =
+  "Better PWA: CSP Disabled for manifest replacement";
+const DISABLED_TEXT = "Better PWA: No betterment available";
 
 const NEXT_ID_KEY = "nextNetRequestId";
 const RULE_KEY_PREFIX = "netRequestRule";
@@ -121,18 +125,23 @@ function updateForTab(tab, cspDisabled) {
             48: cspDisabled ? CSP_DISABLED_ICON : NEEDS_CSP_DISABLED_ICON,
           },
         });
+        chrome.action.setTitle({
+          title: cspDisabled ? CSP_DIABLED_TEXT : NEEDS_CSP_DIABLED_TEXT,
+        });
       }
       getRuleIdIfExists(site.url, (id) => {
         if (id) {
           chrome.action.setIcon({ path: { 48: CSP_DISABLED_ICON } });
+          chrome.action.setTitle({ title: CSP_DIABLED_TEXT });
           return;
         }
         chrome.action.setIcon({ path: { 48: NEEDS_CSP_DISABLED_ICON } });
+        chrome.action.setTitle({ title: NEEDS_CSP_DIABLED_TEXT });
       });
       return;
     }
-    chrome.action.setIcon({ path: { 48: site.icon } });
-    chrome.action.setTitle({ title: site.title });
+    chrome.action.setIcon({ path: { 48: ENABLED_ICON } });
+    chrome.action.setTitle({ title: ENABLED_TEXT });
     return;
   }
 
