@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Better PWAs",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Improved PWAs for selected sites",
   "icons": {
     "48": "images/icon48.png",
@@ -29,14 +29,5 @@
       "js": ["manifests/github.com.js", "replaceManifest.js"],
       "run_at": "document_end"
     }
-  ],
-  "declarative_net_request": {
-    "rule_resources": [
-      {
-        "id": "ruleset_1",
-        "enabled": true,
-        "path": "rules/github.com.json"
-      }
-    ]
-  }
+  ]
 }
