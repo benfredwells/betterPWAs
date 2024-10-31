@@ -15,22 +15,20 @@ const DISABLED_ICON = "./images/iconDisabled48.png";
 
 const ENABLED_TEXT = "Better PWA: Manifest updated";
 const NEEDS_CSP_DIABLED_TEXT = "Better PWA: Click to disable CSP";
-const CSP_DIABLED_TEXT =
-  "Better PWA: CSP Disabled for manifest replacement";
+const CSP_DIABLED_TEXT = "Better PWA: CSP Disabled for manifest replacement";
 const DISABLED_TEXT = "Better PWA: No betterment available";
 
 const NEXT_ID_KEY = "nextNetRequestId";
 const RULE_KEY_PREFIX = "netRequestRule";
 
-function getRuleIdIfExists(url, callback) {
+async function getRuleIdIfExists(url) {
   const ruleIdKey = `${RULE_KEY_PREFIX}${url}`;
-  chrome.storage.session.get(ruleIdKey).then((value) => {
-    if (value && value[ruleIdKey] !== undefined) {
-      callback(value[ruleIdKey]);
-    } else {
-      callback(null);
-    }
-  });
+  const value = await chrome.storage.session.get(ruleIdKey);
+  if (value && value[ruleIdKey] !== undefined) {
+    return value[ruleIdKey];
+  }
+
+  return null;
 }
 
 function setRuleId(url, id) {
@@ -46,18 +44,16 @@ function clearRuleId(url) {
   chrome.storage.session.remove(ruleIdKey);
 }
 
-function getNextId(callback) {
-  chrome.storage.session.get(NEXT_ID_KEY).then((value) => {
-    let id = 2;
-    if (value && value.nextNetRequestId) {
-      id = Number(value.nextNetRequestId);
-    }
-    chrome.storage.session
-      .set({
-        nextNetRequestId: id + 1,
-      })
-      .then(callback(id));
+async function getNextId() {
+  const value = await chrome.storage.session.get(NEXT_ID_KEY);
+  let id = 1;
+  if (value && value.nextNetRequestId) {
+    id = Number(value.nextNetRequestId);
+  }
+  await chrome.storage.session.set({
+    nextNetRequestId: id + 1,
   });
+  return id;
 }
 
 function enableCSPBlock(url, id) {
@@ -96,7 +92,7 @@ function siteForTab(tab) {
 chrome.action.onClicked.addListener((tab) => {
   const site = siteForTab(tab);
   if (site && site.needsCSPDisabled) {
-    getRuleIdIfExists(site.url, (id) => {
+    getRuleIdIfExists(site.url).then((id) => {
       if (id !== null) {
         console.log("filter exists, disabling");
         disableCSPBlock(id);
@@ -104,7 +100,7 @@ chrome.action.onClicked.addListener((tab) => {
         updateForTab(tab, false);
       } else {
         console.log("not exists, enabling");
-        getNextId((id) => {
+        getNextId().then((id) => {
           console.log(`storing ${id}`);
           setRuleId(site.url, id);
           enableCSPBlock(site.url, id);
