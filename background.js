@@ -5,6 +5,8 @@ const handledSites = [
   {
     url: "https://github.com",
     needsCSPDisabled: true,
+    js: ["manifests/github.com.js", "replaceManifest.js"],
+    matches: ["https://github.com/*"],
   },
 ];
 
@@ -77,11 +79,29 @@ function enableCSPBlock(url, id) {
   });
 }
 
+function enableContentScript(url, matches, js) {
+  chrome.scripting.registerContentScripts([
+    {
+      id: url,
+      js,
+      persistAcrossSessions: false,
+      matches,
+      runAt: "document_end",
+    },
+  ]);
+}
+
 function disableCSPBlock(id) {
   const numberId = Number(id);
   console.log(`removing ${numberId}`);
   chrome.declarativeNetRequest.updateSessionRules({
     removeRuleIds: [numberId],
+  });
+}
+
+function disableContentScript(url) {
+  chrome.scripting.unregisterContentScripts({
+    ids: [url],
   });
 }
 
@@ -96,6 +116,7 @@ chrome.action.onClicked.addListener((tab) => {
       if (id !== null) {
         console.log("filter exists, disabling");
         disableCSPBlock(id);
+        disableContentScript(site.url);
         clearRuleId(site.url);
         updateForTab(tab, false);
       } else {
@@ -104,6 +125,7 @@ chrome.action.onClicked.addListener((tab) => {
           console.log(`storing ${id}`);
           setRuleId(site.url, id);
           enableCSPBlock(site.url, id);
+          enableContentScript(site.url, site.matches, site.js);
           updateForTab(tab, true);
         });
       }

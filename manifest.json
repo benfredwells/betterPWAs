@@ -13,7 +13,7 @@
     },
     "default_title": "Better PWA: No betterment available"
   },
-  "permissions": ["declarativeNetRequest", "storage", "tabs"],
+  "permissions": ["declarativeNetRequest", "storage", "tabs", "scripting"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
@@ -23,11 +23,6 @@
     {
       "matches": ["https://www.smh.com.au/*"],
       "js": ["manifests/www.smh.com.au.js", "injectManifest.js"]
-    },
-    {
-      "matches": ["https://github.com/*"],
-      "js": ["manifests/github.com.js", "replaceManifest.js"],
-      "run_at": "document_end"
     }
   ]
 }
