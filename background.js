@@ -1,15 +1,3 @@
-const handledSites = [
-  {
-    url: "https://www.smh.com.au",
-  },
-  {
-    url: "https://github.com",
-    needsCSPDisabled: true,
-    js: ["manifests/github.com.js", "replaceManifest.js"],
-    matches: ["https://github.com/*"],
-  },
-];
-
 const ENABLED_ICON = "./images/icon48.png";
 const NEEDS_CSP_DISABLED_ICON = "./images/iconBlue48.png";
 const CSP_DISABLED_ICON = "./images/iconRed48.png";
@@ -22,6 +10,18 @@ const DISABLED_TEXT = "Better PWA: No betterment available";
 
 const NEXT_ID_KEY = "nextNetRequestId";
 const RULE_KEY_PREFIX = "netRequestRule";
+
+const handledSites = [
+  {
+    url: "https://www.smh.com.au",
+  },
+  {
+    url: "https://github.com",
+    needsCSPDisabled: true,
+    js: ["manifests/github.com.js", "replaceManifest.js"],
+    matches: ["https://github.com/*"],
+  },
+];
 
 async function getRuleIdIfExists(url) {
   const ruleIdKey = `${RULE_KEY_PREFIX}${url}`;
