@@ -147,7 +147,7 @@ function updateForTab(tab, cspDisabled) {
           title: cspDisabled ? CSP_DIABLED_TEXT : NEEDS_CSP_DIABLED_TEXT,
         });
       }
-      getRuleIdIfExists(site.url, (id) => {
+      getRuleIdIfExists(site.url).then((id) => {
         if (id) {
           chrome.action.setIcon({ path: { 48: CSP_DISABLED_ICON } });
           chrome.action.setTitle({ title: CSP_DIABLED_TEXT });
@@ -171,6 +171,6 @@ chrome.tabs.onUpdated.addListener((tabId, changedebug, tab) => {
   updateForTab(tab);
 });
 
-chrome.tabs.onActivated.addListener((activedebug) => {
-  chrome.tabs.get(activedebug.tabId).then((tab) => updateForTab(tab));
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  chrome.tabs.get(activeInfo.tabId).then((tab) => updateForTab(tab));
 });

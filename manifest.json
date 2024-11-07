@@ -24,5 +24,11 @@
       "matches": ["https://www.smh.com.au/*"],
       "js": ["manifests/www.smh.com.au.js", "injectManifest.js"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["manifests/icons/github-256-maskable.png"],
+      "matches": ["https://github.com/*"]
+    }
   ]
 }

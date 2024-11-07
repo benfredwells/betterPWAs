@@ -61,13 +61,19 @@ const manifest = {
       src: "https://github.githubassets.com/assets/app-icon-192-bcc967ab9829.png",
       type: "image/png",
       sizes: "192x192",
-      purpose: "any maskable",
+      purpose: "any",
     },
     {
       src: "https://github.githubassets.com/assets/app-icon-512-7f9c4ff2e960.png",
       type: "image/png",
       sizes: "512x512",
-      purpose: "any maskable",
+      purpose: "any",
+    },
+    {
+      src: chrome.runtime.getURL("manifests/icons/github-256-maskable.png"),
+      type: "image/png",
+      sizes: "256x256",
+      purpose: "maskable",
     },
   ],
 };
