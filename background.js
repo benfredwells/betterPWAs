@@ -16,6 +16,9 @@ const handledSites = [
     url: "https://www.smh.com.au",
   },
   {
+    url: "https://app.slack.com",
+  },
+  {
     url: "https://github.com",
     needsCSPDisabled: true,
     js: ["manifests/github.com.js", "replaceManifest.js"],

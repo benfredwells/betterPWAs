@@ -23,12 +23,24 @@
     {
       "matches": ["https://www.smh.com.au/*"],
       "js": ["manifests/www.smh.com.au.js", "injectManifest.js"]
+    },
+    {
+      "matches": ["https://app.slack.com/*"],
+      "js": ["manifests/app.slack.com.js", "injectManifest.js"]
     }
   ],
   "web_accessible_resources": [
     {
       "resources": ["manifests/icons/github-256-maskable.png"],
       "matches": ["https://github.com/*"]
+    },
+    {
+      "resources": [
+        "manifests/icons/slack-512.png",
+        "manifests/icons/slack-144.png",
+        "manifests/icons/slack-512-maskable.png"
+      ],
+      "matches": ["https://app.slack.com/*"]
     }
   ]
 }
