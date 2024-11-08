@@ -136,38 +136,36 @@ chrome.action.onClicked.addListener((tab) => {
   }
 });
 
+function setBadgeIconAndTitle(iconPath, title, tabId) {
+  chrome.action.setIcon({ path: { 48: iconPath }, tabId });
+  chrome.action.setTitle({ title, tabId });
+}
+
 function updateForTab(tab, cspDisabled) {
   const site = siteForTab(tab);
   if (site) {
     if (site.needsCSPDisabled) {
       if (cspDisabled !== undefined) {
-        chrome.action.setIcon({
-          path: {
-            48: cspDisabled ? CSP_DISABLED_ICON : NEEDS_CSP_DISABLED_ICON,
-          },
-        });
-        chrome.action.setTitle({
-          title: cspDisabled ? CSP_DIABLED_TEXT : NEEDS_CSP_DIABLED_TEXT,
-        });
+        setBadgeIconAndTitle(
+          cspDisabled ? CSP_DISABLED_ICON : NEEDS_CSP_DISABLED_ICON,
+          cspDisabled ? CSP_DIABLED_TEXT : NEEDS_CSP_DIABLED_TEXT,
+          tab.id
+        );
       }
       getRuleIdIfExists(site.url).then((id) => {
         if (id) {
-          chrome.action.setIcon({ path: { 48: CSP_DISABLED_ICON } });
-          chrome.action.setTitle({ title: CSP_DIABLED_TEXT });
+          setBadgeIconAndTitle(CSP_DISABLED_ICON, CSP_DIABLED_TEXT, tab.id);
           return;
         }
-        chrome.action.setIcon({ path: { 48: NEEDS_CSP_DISABLED_ICON } });
-        chrome.action.setTitle({ title: NEEDS_CSP_DIABLED_TEXT });
+        setBadgeIconAndTitle(NEEDS_CSP_DISABLED_ICON, NEEDS_CSP_DIABLED_TEXT, tab.id);
       });
       return;
     }
-    chrome.action.setIcon({ path: { 48: ENABLED_ICON } });
-    chrome.action.setTitle({ title: ENABLED_TEXT });
+    setBadgeIconAndTitle(ENABLED_ICON, ENABLED_TEXT, tab.id);
     return;
   }
 
-  chrome.action.setIcon({ path: { 48: "./images/iconDisabled48.png" } });
-  chrome.action.setTitle({ title: "Better PWA: No betterment available" });
+  setBadgeIconAndTitle(DISABLED_ICON, DISABLED_TEXT, tab.id);
 }
 
 chrome.tabs.onUpdated.addListener((tabId, changedebug, tab) => {
