@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Better PWAs",
-  "version": "0.1.2",
-  "description": "Improved PWAs for selected sites",
+  "version": "1.0.0",
+  "description": "Improved installable web apps for selected sites.",
   "icons": {
     "48": "images/icon48.png",
     "512": "images/icon512.png"
