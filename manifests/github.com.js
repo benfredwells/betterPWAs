@@ -7,7 +7,7 @@ const manifest = {
   tab_strip: {
     home_tab: {
       scope_patterns:
-        // This should be configurable
+        // TODO This should be configurable
         [{ pathname: "pulls" }],
     },
   },
