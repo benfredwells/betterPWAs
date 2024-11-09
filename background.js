@@ -1,15 +1,20 @@
 const ENABLED_ICON = "./images/icon48.png";
 const NEEDS_CSP_DISABLED_ICON = "./images/iconBlue48.png";
+const NEEDS_RELOAD_ICON = "./images/iconRed48.png";
 const CSP_DISABLED_ICON = "./images/iconRed48.png";
 const DISABLED_ICON = "./images/iconDisabled48.png";
 
 const ENABLED_TEXT = "Better PWA: Manifest updated";
-const NEEDS_CSP_DIABLED_TEXT = "Better PWA: Click to disable CSP";
-const CSP_DIABLED_TEXT = "Better PWA: CSP Disabled for manifest replacement";
+const NEEDS_CSP_DISABLED_TEXT =
+  "Better PWA: Replacement manifest available; click to disable CSP";
+const NEEDS_RELOAD_TEXT =
+  "Better PWA: CSP Disabled: reload page to replace manifest";
+const CSP_DISABLED_TEXT = "Better PWA: CSP Disabled; manifest replaced";
 const DISABLED_TEXT = "Better PWA: No betterment available";
 
 const NEXT_ID_KEY = "nextNetRequestId";
 const RULE_KEY_PREFIX = "netRequestRule";
+const REPLACED_TABS_PREFIX = "replacedTabs";
 
 const handledSites = [
   {
@@ -25,6 +30,39 @@ const handledSites = [
     matches: ["https://github.com/*"],
   },
 ];
+
+async function getHasTabBeenReplaced(url, tabId) {
+  const tabsKey = `${REPLACED_TABS_PREFIX}${url}`;
+  const values = await chrome.storage.session.get(tabsKey);
+  if (values && values[tabsKey] !== undefined) {
+    const tabs = values[tabsKey];
+    return tabs.includes(tabId);
+  }
+
+  return false;
+}
+
+async function setTabBasBeenReplaced(url, tabId) {
+  const tabsKey = `${REPLACED_TABS_PREFIX}${url}`;
+  const values = await chrome.storage.session.get(tabsKey);
+  let tabs;
+  if (values && values[tabsKey] !== undefined) {
+    tabs = values[tabsKey];
+  } else {
+    tabs = [];
+  }
+  tabs.push(tabId);
+  values[tabsKey] = tabs;
+  chrome.storage.session.set(values);
+}
+
+async function clearReplacedTabs(url) {
+  const tabsKey = `${REPLACED_TABS_PREFIX}${url}`;
+  const values = await chrome.storage.session.get(tabsKey);
+  const tabs = [];
+  values[tabsKey] = tabs;
+  chrome.storage.session.set(values);
+}
 
 async function getRuleIdIfExists(url) {
   const ruleIdKey = `${RULE_KEY_PREFIX}${url}`;
@@ -96,7 +134,6 @@ function enableContentScript(url, matches, js) {
 
 function disableCSPBlock(id) {
   const numberId = Number(id);
-  console.log(`removing ${numberId}`);
   chrome.declarativeNetRequest.updateSessionRules({
     removeRuleIds: [numberId],
   });
@@ -117,19 +154,18 @@ chrome.action.onClicked.addListener((tab) => {
   if (site && site.needsCSPDisabled) {
     getRuleIdIfExists(site.url).then((id) => {
       if (id !== null) {
-        console.log("filter exists, disabling");
         disableCSPBlock(id);
         disableContentScript(site.url);
         clearRuleId(site.url);
-        updateForTab(tab, false);
+        clearReplacedTabs(site.url);
+        updateForTab(tab, "NEEDS_CSP_DISABLED");
       } else {
-        console.log("not exists, enabling");
         getNextId().then((id) => {
           console.log(`storing ${id}`);
           setRuleId(site.url, id);
           enableCSPBlock(site.url, id);
           enableContentScript(site.url, site.matches, site.js);
-          updateForTab(tab, true);
+          updateForTab(tab, "NEEDS_RELOAD");
         });
       }
     });
@@ -141,23 +177,47 @@ function setBadgeIconAndTitle(iconPath, title, tabId) {
   chrome.action.setTitle({ title, tabId });
 }
 
-function updateForTab(tab, cspDisabled) {
+function updateForTab(tab, updateTo) {
   const site = siteForTab(tab);
   if (site) {
     if (site.needsCSPDisabled) {
-      if (cspDisabled !== undefined) {
-        setBadgeIconAndTitle(
-          cspDisabled ? CSP_DISABLED_ICON : NEEDS_CSP_DISABLED_ICON,
-          cspDisabled ? CSP_DIABLED_TEXT : NEEDS_CSP_DIABLED_TEXT,
-          tab.id
-        );
+      if (updateTo !== undefined) {
+        switch (updateTo) {
+          case "NEEDS_CSP_DISABLED":
+            setBadgeIconAndTitle(
+              NEEDS_CSP_DISABLED_ICON,
+              NEEDS_CSP_DISABLED_TEXT,
+              tab.id
+            );
+            return;
+          case "NEEDS_RELOAD":
+            setBadgeIconAndTitle(NEEDS_RELOAD_ICON, NEEDS_RELOAD_TEXT, tab.id);
+            return;
+          case "CSP_DISABLED":
+            setBadgeIconAndTitle(CSP_DISABLED_ICON, CSP_DISABLED_TEXT, tab.id);
+            return;
+        }
       }
       getRuleIdIfExists(site.url).then((id) => {
         if (id) {
-          setBadgeIconAndTitle(CSP_DISABLED_ICON, CSP_DIABLED_TEXT, tab.id);
+          getHasTabBeenReplaced(site.url, tab.id).then((replaced) => {
+            if (!replaced) {
+              setBadgeIconAndTitle(
+                NEEDS_RELOAD_ICON,
+                NEEDS_RELOAD_TEXT,
+                tab.id
+              );
+              return;
+            }
+            setBadgeIconAndTitle(CSP_DISABLED_ICON, CSP_DISABLED_TEXT, tab.id);
+          });
           return;
         }
-        setBadgeIconAndTitle(NEEDS_CSP_DISABLED_ICON, NEEDS_CSP_DIABLED_TEXT, tab.id);
+        setBadgeIconAndTitle(
+          NEEDS_CSP_DISABLED_ICON,
+          NEEDS_CSP_DISABLED_TEXT,
+          tab.id
+        );
       });
       return;
     }
@@ -174,4 +234,12 @@ chrome.tabs.onUpdated.addListener((tabId, changedebug, tab) => {
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
   chrome.tabs.get(activeInfo.tabId).then((tab) => updateForTab(tab));
+});
+
+chrome.runtime.onMessage.addListener((request, sender) => {
+  if (request.type === "manifestInjected") {
+    const site = siteForTab(sender.tab);
+    setTabBasBeenReplaced(site.url, sender.tab.id);
+    updateForTab(sender.tab, "CSP_DISABLED");
+  }
 });

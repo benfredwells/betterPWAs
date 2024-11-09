@@ -37,4 +37,5 @@ Promise.all(promises).then(() => {
   link.href = `data:application/json;base64,${btoa(JSON.stringify(manifest))}`;
 
   document.head.appendChild(link);
+  chrome.runtime.sendMessage({ type: "manifestInjected" });
 });
