@@ -1,5 +1,6 @@
 const manifest = {
   name: "GitHub",
+  id: "better-pwa/github.com",
   short_name: "GitHub",
   start_url: "https://github.com",
   display: "minimal-ui",

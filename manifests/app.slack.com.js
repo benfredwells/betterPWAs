@@ -1,5 +1,6 @@
 const manifest = {
   name: "Slack",
+  id: "better-pwa/app.slack.com",
   short_name: "Slack",
   start_url: "https://app.slack.com/client",
   scope: "https://app.slack.com/",

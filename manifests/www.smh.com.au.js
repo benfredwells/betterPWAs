@@ -1,5 +1,6 @@
 const manifest = {
   name: "Sydney Morning Herald",
+  id: "better-pwa/www.smh.com.au",
   short_name: "SMH",
   display: "minimal-ui",
   theme_color: "#0A1633",
