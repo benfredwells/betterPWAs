@@ -27,6 +27,10 @@
     {
       "matches": ["https://app.slack.com/*"],
       "js": ["manifests/app.slack.com.js", "injectManifest.js"]
+    },
+    {
+      "matches": ["https://www.canva.com/*"],
+      "js": ["manifests/www.canva.com.js", "injectManifest.js"]
     }
   ],
   "web_accessible_resources": [

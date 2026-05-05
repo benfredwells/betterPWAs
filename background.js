@@ -24,6 +24,9 @@ const handledSites = [
     url: "https://app.slack.com",
   },
   {
+    url: "https://www.canva.com",
+  },
+  {
     url: "https://github.com",
     needsCSPDisabled: true,
     js: ["manifests/github.com.js", "replaceManifest.js"],
