@@ -5,6 +5,7 @@ const manifest = {
   start_url: "https://app.slack.com/client",
   scope: "https://app.slack.com/",
   display: "standalone",
+  display_override: ["tabbed"],
   icons: [
     {
       sizes: "512x512",
